@@ -1,0 +1,1166 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Review Kantin",
+    "description": "Dokumentasi API Tugas 3 Praktikum RSI: validasi zod, autentikasi JWT, dan otorisasi berbasis role (admin, owner, customer).",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Akun dibuat (role customer)"
+          },
+          "400": {
+            "description": "Validasi gagal"
+          },
+          "409": {
+            "description": "Email sudah terdaftar"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Budi Santoso"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "budi@student.test"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "rahasia123"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Login berhasil, mengembalikan token JWT"
+          },
+          "401": {
+            "description": "Email atau password salah"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "admin@kantin.test"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "rahasia123"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data user yang sedang login"
+          },
+          "401": {
+            "description": "Token tidak ada / tidak valid"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users/": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "role",
+            "in": "query",
+            "description": "admin | owner | customer",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar user"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "User dibuat"
+          },
+          "409": {
+            "description": "Email sudah terdaftar"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "name": "Budi Santoso",
+                "email": "budi@example.com",
+                "password": "rahasia123",
+                "role": "customer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail user"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/v1/stalls/": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar warung"
+          },
+          "400": {
+            "description": "Validasi gagal"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Warung dibuat"
+          },
+          "400": {
+            "description": "Validasi gagal"
+          },
+          "401": {
+            "description": "Token tidak ada / tidak valid"
+          },
+          "403": {
+            "description": "Role tidak diizinkan"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StallInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stalls/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail warung"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Warung ter-update"
+          },
+          "401": {
+            "description": "Token tidak ada / tidak valid"
+          },
+          "403": {
+            "description": "Bukan pemilik warung / role tidak diizinkan"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StallInput"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Warung terhapus"
+          },
+          "401": {
+            "description": "Token tidak ada / tidak valid"
+          },
+          "403": {
+            "description": "Hanya admin"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/stalls/{id}/menus": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar menu"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/v1/stalls/{id}/reviews": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Review dibuat"
+          },
+          "400": {
+            "description": "Validasi gagal"
+          },
+          "401": {
+            "description": "Token tidak ada / tidak valid"
+          },
+          "404": {
+            "description": "Warung tidak ditemukan"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "rating"
+                ],
+                "properties": {
+                  "rating": {
+                    "type": "integer",
+                    "example": 5
+                  },
+                  "comment": {
+                    "type": "string",
+                    "example": "Enak dan murah"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/menu-items/": {
+      "get": {
+        "tags": [
+          "Menu Items"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "stallId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isAvailable",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar menu beserta data warung (JOIN)"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Menu Items"
+        ],
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Menu dibuat"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "stallId": 1,
+                "name": "Nasi Goreng",
+                "price": 15000,
+                "isAvailable": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/menu-items/{id}": {
+      "get": {
+        "tags": [
+          "Menu Items"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail menu beserta data warung (JOIN)"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Menu Items"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menu ter-update"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "name": "Nasi Goreng Spesial",
+                "price": 18000,
+                "isAvailable": true
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Menu Items"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menu terhapus"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/v1/reviews/": {
+      "get": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "stallId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar review beserta data user (JOIN)"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Review dibuat"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "stallId": 1,
+                "userId": 1,
+                "rating": 5,
+                "comment": "Enak dan porsinya banyak"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reviews/{id}": {
+      "get": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail review beserta data user (JOIN)"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Review terhapus"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/v1/likes/": {
+      "post": {
+        "tags": [
+          "Likes"
+        ],
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Like dibuat"
+          },
+          "409": {
+            "description": "User sudah menyukai review ini"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "reviewId": 1,
+                "userId": 2
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/likes/{id}": {
+      "delete": {
+        "tags": [
+          "Likes"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Like terhapus"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/v1/flags/": {
+      "get": {
+        "tags": [
+          "Flags"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar laporan review beserta pelapor dan review (JOIN)"
+          }
+        }
+      }
+    },
+    "/api/v1/flags/{id}": {
+      "get": {
+        "tags": [
+          "Flags"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail laporan"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Flags"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status laporan ter-update"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "status": "resolved"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audit-logs/": {
+      "get": {
+        "tags": [
+          "Audit Logs"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "targetTable",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar audit log beserta data user (JOIN)"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Audit Logs"
+        ],
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Audit log dibuat"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "userId": 1,
+                "action": "UPDATE",
+                "targetTable": "STALLS",
+                "targetId": 1,
+                "metadata": {
+                  "note": "ubah nama warung"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audit-logs/{id}": {
+      "get": {
+        "tags": [
+          "Audit Logs"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail audit log"
+          },
+          "404": {
+            "description": "Tidak ditemukan"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Tempel token dari POST /api/v1/auth/login (tanpa kata \"Bearer\")."
+      }
+    },
+    "schemas": {
+      "StallInput": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "required": {
+            "type": "array",
+            "example": [
+              "name"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "minLength": {
+                    "type": "number",
+                    "example": 3
+                  },
+                  "maxLength": {
+                    "type": "number",
+                    "example": 100
+                  },
+                  "example": {
+                    "type": "string",
+                    "example": "Warung Bu Sari"
+                  }
+                }
+              },
+              "category": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "maxLength": {
+                    "type": "number",
+                    "example": 50
+                  },
+                  "example": {
+                    "type": "string",
+                    "example": "Nasi"
+                  }
+                }
+              },
+              "location": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "maxLength": {
+                    "type": "number",
+                    "example": 100
+                  },
+                  "example": {
+                    "type": "string",
+                    "example": "Kantin FKIP"
+                  }
+                }
+              },
+              "description": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "maxLength": {
+                    "type": "number",
+                    "example": 1000
+                  },
+                  "example": {
+                    "type": "string",
+                    "example": "Nasi pecel dan lauk"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
